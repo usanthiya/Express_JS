@@ -20,7 +20,9 @@ const PORT = 3500;
 app.use(express.urlencoded({extended: false}))
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(logger); //Customer middleware
+
+// Custom middleware that logs request details with timestamp + UUID into logs/reqLog.txt
+app.use(logger); 
 
 // Define a GET route for the root URL '/' that sends a plain text response
 app.get('/',(req, res)=>{
