@@ -3,11 +3,33 @@ const app = express();
 const path = require('path');
 const PORT = 3500;
 
+app.use((req, res, next)=>{
+  console.log(`${req.method} ${req.path}`);
+  next();
+})
+
+// Built in Middleware
+// Parse form data → parse JSON body → serve static files from /public
+/**
+  - app.use(express.urlencoded({ extended: false }))
+     Middleware that parses URL-encoded form data (like what comes from an HTML <form> with method="POST").
+     option:
+      extended: false → uses the Node.js built-in querystring library (simpler, doesn’t support nested objects).
+      extended: true → uses the qs library (allows rich objects, like user[name]=Santhiya).
+  - app.use(express.json())
+     Middleware that parses incoming JSON request bodies.
+  - app.use(express.static(path.join(__dirname, 'public')))
+     Serves static files (HTML, CSS, JS, images, etc.) directly from the public folder.
+ */
+app.use(express.urlencoded({extended: false}))
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')))
+
 // Define a GET route for the root URL '/' that sends a plain text response
 app.get('/',(req, res)=>{
   res.send("Hello World!");
 })
-
+ 
 // Define a GET route for '/index.html' that sends the index.html file located in the 'views' folder
 app.get('/index.html',(req, res)=>{
   res.sendFile(path.join(__dirname,'views','index.html'));
