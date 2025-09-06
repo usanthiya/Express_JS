@@ -1,0 +1,7 @@
+2025-09-06 01:08:35	5309df7b-41d4-4d83-b11a-0aba36c66b97	GET	undefined	/
+2025-09-06 01:08:46	4adb848f-c360-48c1-b3a5-e5ad7ba7f2f7	GET	undefined	/new-page.html
+2025-09-06 01:08:46	c8ea3a5f-b646-4298-b58c-7aa6482969aa	GET	undefined	/css/style.css
+2025-09-06 01:08:46	0b5aa1f6-2bf0-4b20-b9de-7f5790922723	GET	undefined	/img/img1.jpg
+2025-09-06 01:13:30	11dbbe8f-8c0e-4d37-8ff5-968be1a51781	GET	 undefined	/index.html
+2025-09-06 01:13:30	7d54657a-b3f6-4a31-b46a-b3b16633cb99	GET	 undefined	/css/style.css
+2025-09-06 01:14:36	73b8d7ae-537e-4e85-ac22-05d07d426548	GET	 undefined	/index.html

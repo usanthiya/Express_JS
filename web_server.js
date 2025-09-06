@@ -1,12 +1,8 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const logger = require('./middleware/logEvents');
 const PORT = 3500;
-
-app.use((req, res, next)=>{
-  console.log(`${req.method} ${req.path}`);
-  next();
-})
 
 // Built in Middleware
 // Parse form data → parse JSON body → serve static files from /public
@@ -24,6 +20,7 @@ app.use((req, res, next)=>{
 app.use(express.urlencoded({extended: false}))
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(logger); //Customer middleware
 
 // Define a GET route for the root URL '/' that sends a plain text response
 app.get('/',(req, res)=>{
