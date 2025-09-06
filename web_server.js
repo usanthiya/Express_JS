@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const logger = require('./middleware/logEvents');
+const cors = require('cors');
 const PORT = 3500;
 
 // Built in Middleware
@@ -23,6 +24,35 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 // Custom middleware that logs request details with timestamp + UUID into logs/reqLog.txt
 app.use(logger); 
+
+// Third party middleware: ex: cors, morgan, Cookie-aparser, ..
+//Allow all origin
+// app.use(cors());
+
+//or allow only specific origin
+// app.use(cors({
+//   origin: 'http://localhost:5000'
+// }))
+
+/***
+ *here only requests from the whitelist will work; all others will throw a CORS error.
+ callback(error, allow) is used to:
+   - callback(null, true) → allow the request.
+   - callback(new Error('Not allowed by CORS')) → block the request.
+ */
+const whiteList = ['https://www.website.com', 'http://localhost:3500'];
+const corsOptions ={
+  origin: (origin, callback)=>{
+    if(whiteList.includes(origin)){
+      callback(null, true)
+    }else{
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
+
 
 // Define a GET route for the root URL '/' that sends a plain text response
 app.get('/',(req, res)=>{
@@ -46,7 +76,7 @@ app.get('/old-page.html',(req,res)=>{
 // First middleware logs the request then calls next(), second handler sends the final response.
 app.get('/hello.html',(req, res, next)=>{
     console.log("Trying to load hello.html page");
-    next();
+    next(); // Call next() to pass control to the next middleware function
 },(req,res)=>{
     res.send("Hi, Hello");
 })
