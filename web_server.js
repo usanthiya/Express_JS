@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const logger = require('./middleware/logEvents');
+const { logger }= require('./middleware/logEvents');
 const cors = require('cors');
+const errorHandler = require('./middleware/errorHandler');
 const PORT = 3500;
 
 // Built in Middleware
@@ -40,9 +41,10 @@ app.use(logger);
    - callback(null, true) → allow the request.
    - callback(new Error('Not allowed by CORS')) → block the request.
  */
-const whiteList = ['https://www.website.com', 'http://localhost:3500'];
+const whiteList = ['https://www.website.com', 'http://127.0.0.1:3500'];
 const corsOptions ={
   origin: (origin, callback)=>{
+    console.log("Request Origin:", origin);  
     if(whiteList.includes(origin)){
       callback(null, true)
     }else{
@@ -108,6 +110,8 @@ app.get('/chain',[one, two, three]);
 app.use((req,res)=>{
   res.status(404).sendFile(path.join(__dirname,'views','404.html'));
 })
+
+app.use(errorHandler)
 
 // Start the server
 app.listen(PORT,()=>{
