@@ -6,6 +6,7 @@ const cors = require('cors');
 const errorHandler = require('./middleware/errorHandler');
 const root = require('./routes/root');
 const subdir = require('./routes/subdir');
+const employees = require('./routes/api/employees');
 const PORT = 3500;
 
 // Built in Middleware
@@ -34,6 +35,8 @@ app.use('/subdir',express.static(path.join(__dirname, 'public')))
 //Routing middleware
 app.use('/', root)
 app.use('/subdir',subdir);
+
+app.use('/employees', employees); //simple rest API
 
 // Custom middleware that logs request details with timestamp + UUID into logs/reqLog.txt
 app.use(logger); 
