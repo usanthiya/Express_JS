@@ -4,6 +4,8 @@ const path = require('path');
 const { logger }= require('./middleware/logEvents');
 const cors = require('cors');
 const errorHandler = require('./middleware/errorHandler');
+const root = require('./routes/root');
+const subdir = require('./routes/subdir');
 const PORT = 3500;
 
 // Built in Middleware
@@ -18,10 +20,20 @@ const PORT = 3500;
      Middleware that parses incoming JSON request bodies.
   - app.use(express.static(path.join(__dirname, 'public')))
      Serves static files (HTML, CSS, JS, images, etc.) directly from the public folder.
+     app.use(path, middleware) mounts that static file middleware on a URL path prefix.
+     If you omit / or /subdir,like this 
+       app.use(express.static(path.join(__dirname, 'public')));
+       then it behaves the same as app.use('/', ...) — i.e., mounted at the root /.
+
  */
 app.use(express.urlencoded({extended: false}))
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')))
+app.use('/',express.static(path.join(__dirname, 'public')))
+app.use('/subdir',express.static(path.join(__dirname, 'public')))
+
+//Routing middleware
+app.use('/', root)
+app.use('/subdir',subdir);
 
 // Custom middleware that logs request details with timestamp + UUID into logs/reqLog.txt
 app.use(logger); 
@@ -31,9 +43,9 @@ app.use(logger);
 // app.use(cors());
 
 //or allow only specific origin
-// app.use(cors({
-//   origin: 'http://localhost:5000'
-// }))
+app.use(cors({
+  origin: 'http://localhost:3500'
+}))
 
 /***
  *here only requests from the whitelist will work; all others will throw a CORS error.
@@ -53,59 +65,7 @@ const corsOptions ={
   },
   optionsSuccessStatus: 200
 }
-app.use(cors(corsOptions))
-
-
-// Define a GET route for the root URL '/' that sends a plain text response
-app.get('/',(req, res)=>{
-  res.send("Hello World!");
-})
- 
-// Define a GET route for '/index.html' that sends the index.html file located in the 'views' folder
-app.get('/index.html',(req, res)=>{
-  res.sendFile(path.join(__dirname,'views','index.html'));
-})
-
-// Define a GET route for '/new-page.html' that sends the new-page.html file located in the 'views' folder
-app.get('/new-page.html',(req, res)=>{
-  res.sendFile(path.join(__dirname,'views','new-page.html'));
-})
-
-app.get('/old-page.html',(req,res)=>{
-  res.redirect('new-page.html')
-})
-
-// First middleware logs the request then calls next(), second handler sends the final response.
-app.get('/hello.html',(req, res, next)=>{
-    console.log("Trying to load hello.html page");
-    next(); // Call next() to pass control to the next middleware function
-},(req,res)=>{
-    res.send("Hi, Hello");
-})
-
-// Executes 'one' → 'two' → 'three' in sequence for the /chain route.
-/**
- * 
-one runs → logs "one", then calls next()
-two runs → logs "two", then calls next()
-three runs → logs "three", then sends 'Finished!'
- */
-const one = (rq, res, next)=>{
-  console.log("one");
-  next();
-}
-
-const two = (rq, res, next)=>{
-  console.log("two");
-  next();
-}
-
-const three = (rq, res)=>{
-  console.log("three");
-  res.send('Finished!')
-}
-
-app.get('/chain',[one, two, three]);
+// app.use(cors(corsOptions))
 
 app.use((req,res)=>{
   res.status(404).sendFile(path.join(__dirname,'views','404.html'));
