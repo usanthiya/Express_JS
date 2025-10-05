@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const { logger }= require('./middleware/logEvents');
 const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
 const errorHandler = require('./middleware/errorHandler');
 const root = require('./routes/root');
 const subdir = require('./routes/subdir');
@@ -46,29 +47,11 @@ app.use(logger);
 // app.use(cors());
 
 //or allow only specific origin
-app.use(cors({
-  origin: 'http://localhost:3500'
-}))
+// app.use(cors({
+//   origin: 'http://localhost:3500'
+// }))
 
-/***
- *here only requests from the whitelist will work; all others will throw a CORS error.
- callback(error, allow) is used to:
-   - callback(null, true) → allow the request.
-   - callback(new Error('Not allowed by CORS')) → block the request.
- */
-const whiteList = ['https://www.website.com', 'http://127.0.0.1:3500'];
-const corsOptions ={
-  origin: (origin, callback)=>{
-    console.log("Request Origin:", origin);  
-    if(whiteList.includes(origin)){
-      callback(null, true)
-    }else{
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  optionsSuccessStatus: 200
-}
-// app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 
 app.use((req,res)=>{
   res.status(404).sendFile(path.join(__dirname,'views','404.html'));
